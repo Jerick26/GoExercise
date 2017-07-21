@@ -15,6 +15,8 @@
  *  7  cap=8	[0 1 2 3 4 5 6 7]
  *  8  cap=16	[0 1 2 3 4 5 6 7 8]
  *  9  cap=16	[0 1 2 3 4 5 6 7 8 9]
+ *  cap=20	[0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9]
+ *  cap=40	[0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 100 101 102]
  *
  ******************************************************************************/
 
@@ -22,9 +24,10 @@ package main
 
 import "fmt"
 
-func appendInt(x []int, y int) []int {
+func appendInt(x []int, y ...int) []int {
 	var z []int
-	zlen := len(x) + 1
+	// zlen := len(x) + 1
+	zlen := len(x) + len(y)
 	if zlen <= cap(x) {
 		// there is room to grow. Extend the slice
 		z = x[:zlen]
@@ -38,7 +41,8 @@ func appendInt(x []int, y int) []int {
 		z = make([]int, zlen, zcap)
 		copy(z, x)
 	}
-	z[len(x)] = y
+	//z[len(x)] = y
+	copy(z[len(x):], y)
 	return z
 }
 
@@ -48,4 +52,9 @@ func main() {
 		a = appendInt(a, i)
 		fmt.Printf("%d  cap=%d\t%v\n", i, cap(a), a)
 	}
+	// use build-in append
+	a = appendInt(a, a...)
+	fmt.Printf("cap=%d\t%v\n", cap(a), a)
+	a = appendInt(a, 100, 101, 102)
+	fmt.Printf("cap=%d\t%v\n", cap(a), a)
 }
